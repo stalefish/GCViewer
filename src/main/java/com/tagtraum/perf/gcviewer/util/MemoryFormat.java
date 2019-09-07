@@ -3,7 +3,7 @@ package com.tagtraum.perf.gcviewer.util;
 import java.text.NumberFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
-
+import static com.tagtraum.perf.gcviewer.util.MemorySizeUnitType.*;
 /**
  * MemoryFormat.
  *
@@ -28,41 +28,15 @@ public class MemoryFormat extends NumberFormat {
 
     public StringBuffer format(double memInK, StringBuffer toAppendTo, FieldPosition pos) {
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
-            format.format(bytes / ONE_MB, toAppendTo, pos);
-            toAppendTo.append('M');
-        }
-        else if (bytes >= TEN_KB) {
-            format.format(bytes / ONE_KB, toAppendTo, pos);
-            toAppendTo.append('K');
-        }
-        else {
-            int maxFrac = format.getMaximumFractionDigits();
-            format.setMaximumFractionDigits(0);
-            format.format(bytes, toAppendTo, pos);
-            format.setMaximumFractionDigits(maxFrac);
-            toAppendTo.append('B');
-        }
+        MemorySizeUnitType msu = determineUnit(bytes);
+        formatBytes(toAppendTo, pos, true, bytes, msu);
         return toAppendTo;
     }
 
     public StringBuffer format(long memInK, StringBuffer toAppendTo, FieldPosition pos) {
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
-            format.format(bytes / ONE_MB, toAppendTo, pos);
-            toAppendTo.append('M');
-        }
-        else if (bytes >= TEN_KB) {
-            format.format(bytes / ONE_KB, toAppendTo, pos);
-            toAppendTo.append('K');
-        }
-        else {
-            int maxFrac = format.getMaximumFractionDigits();
-            format.setMaximumFractionDigits(0);
-            format.format(bytes, toAppendTo, pos);
-            format.setMaximumFractionDigits(maxFrac);
-            toAppendTo.append('B');
-        }
+        MemorySizeUnitType msu = determineUnit(bytes);
+        formatBytes(toAppendTo, pos, true, bytes, msu);
         return toAppendTo;
     }
 
@@ -88,34 +62,43 @@ public class MemoryFormat extends NumberFormat {
         int iOrigMinFracDigits = format.getMinimumFractionDigits();
         format.setMaximumFractionDigits(3);
         format.setMinimumFractionDigits(format.getMinimumFractionDigits());
-
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
-        	format.format(bytes / ONE_MB, toAppendTo, pos);
-            units = 'M';
-            if(bAppendUnits)
-            	toAppendTo.append(units);
-        }
-        else if (bytes >= TEN_KB) {
-        	format.format(bytes / ONE_KB, toAppendTo, pos);
-            units = 'K';
-            if(bAppendUnits)
-            	toAppendTo.append(units);
-        }
-        else {
-            int maxFrac = format.getMaximumFractionDigits();
-            format.setMaximumFractionDigits(0);
-            format.format(bytes, toAppendTo, pos);
-            format.setMaximumFractionDigits(maxFrac);
-            units = 'B';
-            if(bAppendUnits)
-            	toAppendTo.append(units);
-        }
+        MemorySizeUnitType msu = determineUnit(bytes);
+        formatBytes(toAppendTo, pos, bAppendUnits, bytes, msu);
 
+        units = msu.charValue();
         format.setMaximumFractionDigits(iOrigMaxFracDigits);
         format.setMinimumFractionDigits(iOrigMinFracDigits);
 
         return new FormattedValue(toAppendTo, units);
     }
 
+    protected void formatBytes(StringBuffer toAppendTo, FieldPosition pos, boolean bAppendUnits, double bytes, MemorySizeUnitType msu) {
+        switch (msu) {
+            case M:
+                format.format(bytes / ONE_MB, toAppendTo, pos);
+                break;
+            case K:
+                format.format(bytes / ONE_KB, toAppendTo, pos);
+                break;
+            case B:
+                int maxFrac = format.getMaximumFractionDigits();
+                format.setMaximumFractionDigits(0);
+                format.format(bytes, toAppendTo, pos);
+                format.setMaximumFractionDigits(maxFrac);
+                break;
+        }
+        if(bAppendUnits)
+            toAppendTo.append(msu.charValue());
+    }
+
+    protected MemorySizeUnitType determineUnit(double bytes) {
+        if (bytes >= TEN_MB) {
+            return M;
+        } else if (bytes >= TEN_KB) {
+            return K;
+        } else {
+            return B;
+        }
+    }
 }

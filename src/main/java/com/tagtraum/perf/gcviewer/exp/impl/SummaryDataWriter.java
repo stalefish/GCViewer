@@ -10,9 +10,7 @@ import java.util.Map;
 
 import com.tagtraum.perf.gcviewer.exp.AbstractDataWriter;
 import com.tagtraum.perf.gcviewer.model.GCModel;
-import com.tagtraum.perf.gcviewer.util.FormattedValue;
-import com.tagtraum.perf.gcviewer.util.MemoryFormat;
-import com.tagtraum.perf.gcviewer.util.TimeFormat;
+import com.tagtraum.perf.gcviewer.util.*;
 
 /**
  * SummaryDataWriter writes a csv-file of quite a few parameters of the {@link GCModel} class.
@@ -26,6 +24,7 @@ import com.tagtraum.perf.gcviewer.util.TimeFormat;
 public class SummaryDataWriter extends AbstractDataWriter {
 
     private ISummaryExportFormatter formatter;
+    private MemorySizeUnitType memorySizeUnitType;
 
     /*
      * field formatters
@@ -63,7 +62,7 @@ public class SummaryDataWriter extends AbstractDataWriter {
         if (this.formatter == null) {
             this.formatter = new CsvSummaryExportFormatter();
         }
-
+        this.memorySizeUnitType = (MemorySizeUnitType) getConfiguration().get(ISummaryExportFormatter.MEMORY_UNIT);
         initialiseFormatters();
     }
 
@@ -79,13 +78,13 @@ public class SummaryDataWriter extends AbstractDataWriter {
         throughputFormatter = NumberFormat.getInstance();
         throughputFormatter.setMaximumFractionDigits(2);
 
-        footprintFormatter = new MemoryFormat();
+        footprintFormatter = memorySizeUnitType != null ? new MemoryFormatFixed(memorySizeUnitType) : new MemoryFormat();
 
-        sigmaMemoryFormatter = new MemoryFormat();
+        sigmaMemoryFormatter = memorySizeUnitType != null ? new MemoryFormatFixed(memorySizeUnitType) : new MemoryFormat();
 
-        footprintSlopeFormatter = new MemoryFormat();
+        footprintSlopeFormatter = memorySizeUnitType != null ? new MemoryFormatFixed(memorySizeUnitType) : new MemoryFormat();
 
-        freedMemoryPerMinFormatter = new MemoryFormat();
+        freedMemoryPerMinFormatter = memorySizeUnitType != null ? new MemoryFormatFixed(memorySizeUnitType) : new MemoryFormat();
 
         percentFormatter = NumberFormat.getInstance();
         percentFormatter.setMaximumFractionDigits(1);

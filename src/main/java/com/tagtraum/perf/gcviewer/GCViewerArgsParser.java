@@ -1,13 +1,13 @@
 package com.tagtraum.perf.gcviewer;
 
 import com.tagtraum.perf.gcviewer.exp.DataWriterType;
+import com.tagtraum.perf.gcviewer.exp.impl.ISummaryExportFormatter;
 import com.tagtraum.perf.gcviewer.model.GCResource;
 import com.tagtraum.perf.gcviewer.model.GcResourceFile;
 import com.tagtraum.perf.gcviewer.model.GcResourceSeries;
+import com.tagtraum.perf.gcviewer.util.MemorySizeUnitType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +25,9 @@ public class GCViewerArgsParser {
     private String gcFile;
     private String summaryFilePath;
     private DataWriterType type = DataWriterType.SUMMARY;
-    
+    private MemorySizeUnitType memoryUnit = null;
+    Map<String, Object> configuration = new TreeMap<>();
+
     public int getArgumentCount() {
         return argumentCount;
     }
@@ -56,6 +58,14 @@ public class GCViewerArgsParser {
         return type; 
     }
 
+    public MemorySizeUnitType getMemoryUnit() {
+        return memoryUnit;
+    }
+
+    public Map<String, Object> getConfiguration() {
+        return configuration;
+    }
+
     /**
      * Parse arguments given in parameter. If an illegal argument is given, an exception is thrown.
      * 
@@ -78,6 +88,21 @@ public class GCViewerArgsParser {
             argsList.remove(typeIdx);
         }
 
+        int memUnitIdx = argsList.indexOf("-m");
+
+        // If there is a -m and there is a string after, set the memoryUnit
+        if (memUnitIdx != -1 && argsList.size() > (memUnitIdx + 1)) {
+            memoryUnit = parseMemType(argsList.get(memUnitIdx + 1));
+            configuration.put(ISummaryExportFormatter.MEMORY_UNIT, memoryUnit);
+            // Chomp these two from the array to prevent any order issues
+            argsList.remove(memUnitIdx);
+            argsList.remove(memUnitIdx);
+        }
+        else if (typeIdx != -1) {
+            // No specific type set, just keep the default
+            argsList.remove(typeIdx);
+        }
+
         argumentCount = argsList.size();
         gcFile = safeGetArgument(argsList, ARG_POS_GCFILE);
         summaryFilePath = safeGetArgument(argsList, ARG_POS_SUMMARY_FILE);
@@ -92,7 +117,16 @@ public class GCViewerArgsParser {
             throw new GCViewerArgsParserException(type);
         }
     }
-    
+
+    private MemorySizeUnitType parseMemType(String type) throws GCViewerArgsParserException {
+        try {
+            return MemorySizeUnitType.valueOf(type);
+        }
+        catch (IllegalArgumentException e) {
+            throw new GCViewerArgsParserException(type);
+        }
+    }
+
     private String safeGetArgument(List<String> arguments, int index) {
         if (arguments.size() > index) {
             return arguments.get(index);

@@ -97,7 +97,7 @@ public class GCViewer {
     }
 
     private void exportType(GCModel model, String summaryFilePath, DataWriterType type) throws IOException {
-        try (DataWriter summaryWriter = DataWriterFactory.getDataWriter(new File(summaryFilePath), type)) {
+        try (DataWriter summaryWriter = DataWriterFactory.getDataWriter(new File(summaryFilePath), type, gcViewerArgsParser.getConfiguration())) {
             summaryWriter.write(model);
         }
     }
