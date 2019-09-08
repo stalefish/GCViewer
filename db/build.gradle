@@ -1,0 +1,30 @@
+plugins {
+    id 'org.liquibase.gradle' version '2.0.1'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    liquibaseRuntime 'org.liquibase:liquibase-core:3.6.1'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
+    liquibaseRuntime 'com.h2database:h2:1.3.160'
+    liquibaseRuntime 'org.postgresql:postgresql:42.1.4'
+
+}
+def changeLog = "$projectDir/src/main/db/changelog.xml"
+
+liquibase {
+    activities {
+        main {
+            changeLogFile changeLog
+            url 'jdbc:h2:db/gclog'
+            username 'admin'
+            password 'password'
+        }
+
+    }
+}
+
