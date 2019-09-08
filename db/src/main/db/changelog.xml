@@ -38,30 +38,30 @@
             <column name="slopeAfterFullGC" type="numeric(10,3)"/>
             <column name="freedMemoryByFullGC" type="numeric(10,2)"/>
             <column name="avgFreedMemoryByFullGC" type="numeric(10,2)"/>
-            <column name="avgFreedMemoryByFullGCσ" type="numeric(10,2)"/>
+            <column name="avgFreedMemoryByFullGCStdDev" type="numeric(10,2)"/>
             <column name="avgFreedMemoryByFullGCisSig" type="boolean"/>
             <column name="avgfootprintAfterGC" type="numeric(10,2)"/>
-            <column name="avgfootprintAfterGCσ" type="numeric(10,2)"/>
+            <column name="avgfootprintAfterGCStdDev" type="numeric(10,2)"/>
             <column name="avgfootprintAfterGCisSig" type="boolean"/>
             <column name="slopeAfterGC" type="numeric(10,3)"/>
             <column name="avgRelativePostGCInc" type="numeric(10,3)"/>
             <column name="freedMemoryByGC" type="numeric(20,2)"/>
             <column name="freedMemoryByGCpc" type="numeric(5,2)"/>
             <column name="avgFreedMemoryByGC" type="numeric(10,3)"/>
-            <column name="avgFreedMemoryByGCσ" type="numeric(10,3)"/>
+            <column name="avgFreedMemoryByGCStdDev" type="numeric(10,3)"/>
             <column name="avgFreedMemoryByGCisSig" type="boolean"/>
             <column name="avgPromotion" type="numeric(10,3)"/>
             <column name="promotionTotal" type="numeric(20,3)"/>
             <column name="pauseCount" type="int"/>
             <column name="avgPauseIsSig" type="boolean"/>
             <column name="avgPause" type="numeric(15,5)"/>
-            <column name="avgPauseσ" type="numeric(15,5)"/>
+            <column name="avgPauseStdDev" type="numeric(15,5)"/>
             <column name="minPause" type="numeric(15,5)"/>
             <column name="maxPause" type="numeric(15,5)"/>
             <column name="gcPauseCount" type="int"/>
             <column name="avgGCPauseIsSig" type="boolean"/>
             <column name="avgGCPause" type="numeric(15,5)"/>
-            <column name="avgGCPauseσ" type="numeric(15,5)"/>
+            <column name="avgGCPauseStdDev" type="numeric(15,5)"/>
             <column name="avgFullGCPause" type="numeric(15,5)"/>
             <column name="accumPause" type="numeric(15,5)"/>
             <column name="fullGCPause" type="numeric(15,5)"/>
