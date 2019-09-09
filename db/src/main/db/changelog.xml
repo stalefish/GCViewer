@@ -7,7 +7,7 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="1" author="schiu">
-        <createTable tableName="gclog">
+        <createTable tableName="gc_summary">
             <column name="id" autoIncrement="true" type="int" startWith="100">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -24,60 +24,48 @@
             <column name="endTime" type="time"/>
             <column name="totalHeapAllocMax" type ="int"/>
             <column name="totalHeapUsedMax" type="numeric(10,2)"/>
-            <column name="totalHeapUsedMaxpc" type="numeric(5,2)"/>
             <column name="totalTenuredAllocMax" type="numeric(10,2)"/>
             <column name="totalTenuredUsedMax" type="numeric(10,2)"/>
-            <column name="totalTenuredUsedMaxpc" type="numeric(5,2)"/>
             <column name="totalYoungAllocMax" type="numeric(10,2)"/>
             <column name="totalYoungUsedMax" type="numeric(10,2)"/>
-            <column name="totalYoungUsedMaxpc" type="numeric(5,2)"/>
             <column name="totalPermAllocMax" type="numeric(10,2)"/>
             <column name="totalPermUsedMax" type="numeric(10,2)"/>
-            <column name="totalPermUsedMaxpc" type="numeric(5,2)"/>
             <column name="footprintAfterFullGC" type="numeric(10,2)"/>
             <column name="slopeAfterFullGC" type="numeric(10,3)"/>
-            <column name="freedMemoryByFullGC" type="numeric(10,2)"/>
-            <column name="avgFreedMemoryByFullGC" type="numeric(10,2)"/>
-            <column name="avgFreedMemoryByFullGCStdDev" type="numeric(10,2)"/>
-            <column name="avgFreedMemoryByFullGCisSig" type="boolean"/>
+            <column name="freedMemoryByFullGC" type="numeric(20,3)"/>
+            <column name="avgFreedMemoryByFullGC" type="numeric(15,3)"/>
+            <column name="avgFreedMemoryByFullGCStdDev" type="numeric(10,3)"/>
             <column name="avgfootprintAfterGC" type="numeric(10,2)"/>
             <column name="avgfootprintAfterGCStdDev" type="numeric(10,2)"/>
-            <column name="avgfootprintAfterGCisSig" type="boolean"/>
             <column name="slopeAfterGC" type="numeric(10,3)"/>
             <column name="avgRelativePostGCInc" type="numeric(10,3)"/>
             <column name="freedMemoryByGC" type="numeric(20,2)"/>
-            <column name="freedMemoryByGCpc" type="numeric(5,2)"/>
-            <column name="avgFreedMemoryByGC" type="numeric(10,3)"/>
+            <column name="avgFreedMemoryByGC" type="numeric(15,3)"/>
             <column name="avgFreedMemoryByGCStdDev" type="numeric(10,3)"/>
-            <column name="avgFreedMemoryByGCisSig" type="boolean"/>
             <column name="avgPromotion" type="numeric(10,3)"/>
             <column name="promotionTotal" type="numeric(20,3)"/>
             <column name="pauseCount" type="int"/>
-            <column name="avgPauseIsSig" type="boolean"/>
             <column name="avgPause" type="numeric(15,5)"/>
             <column name="avgPauseStdDev" type="numeric(15,5)"/>
             <column name="minPause" type="numeric(15,5)"/>
             <column name="maxPause" type="numeric(15,5)"/>
             <column name="gcPauseCount" type="int"/>
-            <column name="avgGCPauseIsSig" type="boolean"/>
             <column name="avgGCPause" type="numeric(15,5)"/>
             <column name="avgGCPauseStdDev" type="numeric(15,5)"/>
             <column name="avgFullGCPause" type="numeric(15,5)"/>
             <column name="accumPause" type="numeric(15,5)"/>
             <column name="fullGCPause" type="numeric(15,5)"/>
-            <column name="fullGCPausePc" type="numeric(5,2)"/>
             <column name="gcPause" type="numeric(15,5)"/>
-            <column name="gcPausePc" type="numeric(5,2)"/>
             <column name="footprint" type="int"/>
             <column name="freedMemory" type="numeric(20,2)"/>
             <column name="throughput" type="numeric(5,2)"/>
             <column name="totalTime" type="int"/>
-            <column name="freedMemoryPerMin" type="numeric(10,3)"/>
-            <column name="gcPerformance" type="numeric(10,3)"/>
-            <column name="fullGCPerformance" type="numeric(10,3)"/>
+            <column name="freedMemoryPerMin" type="numeric(15,3)"/>
+            <column name="gcPerformance" type="numeric(15,3)"/>
+            <column name="fullGCPerformance" type="numeric(15,3)"/>
         </createTable>
         <addUniqueConstraint columnNames="gcLogFile, startDate, startTime"
                              constraintName="gclogfile_start"
-                             tableName="gclog" />
+                             tableName="gc_summary" />
     </changeSet>
 </databaseChangeLog>

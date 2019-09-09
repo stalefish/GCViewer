@@ -20,7 +20,7 @@ liquibase {
     activities {
         main {
             changeLogFile changeLog
-            url 'jdbc:h2:db/gclog'
+            url 'jdbc:h2:/home/schiu/IdeaProjects/GCViewer/db/db/gclog'
             username 'admin'
             password 'password'
         }

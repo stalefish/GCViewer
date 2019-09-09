@@ -4,13 +4,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.sql.Time;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
 import com.tagtraum.perf.gcviewer.exp.AbstractDataWriter;
+import com.tagtraum.perf.gcviewer.exp.db.GCSummary;
 import com.tagtraum.perf.gcviewer.model.GCModel;
 import com.tagtraum.perf.gcviewer.util.*;
+
+import javax.persistence.EntityManager;
 
 /**
  * SummaryDataWriter writes a csv-file of quite a few parameters of the {@link GCModel} class.
@@ -103,18 +107,68 @@ public class SummaryDataWriter extends AbstractDataWriter {
     @Override
     public void write(GCModel model) throws IOException {
         int lastIndexOfSlash = model.getURL().getFile().lastIndexOf('/');
+
         exportValue(out,
                 "gcLogFile",
                 model.getURL().getFile().substring(lastIndexOfSlash >= 0 ? lastIndexOfSlash + 1 : 0),
                 "-");
+        exportValue(out,
+                "startDate",
+                model.getFirstDateStamp() != null ? model.getFirstDateStamp().toLocalDate().toString() : "",
+                "-");
+        exportValue(out,
+                "startTime",
+                model.getFirstDateStamp() != null ? model.getFirstDateStamp().toLocalTime().toString() : "",
+                "-");
+        exportValue(out,
+                "endDate",
+                model.getLastEventAdded() != null && model.getLastEventAdded().getDatestamp() != null ? model.getLastEventAdded().getDatestamp().toLocalDate().toString() : "",
+                "-");
+        exportValue(out,
+                "endTime",
+                model.getLastEventAdded() != null && model.getLastEventAdded().getDatestamp() != null ? model.getLastEventAdded().getDatestamp().toLocalTime().toString() : "",
+                "-");
+
+        GCSummary summary = new GCSummary();
+        summary.setGcLogFile(model.getURL().getFile().substring(lastIndexOfSlash >= 0 ? lastIndexOfSlash + 1 : 0));
+        if ( model.getFirstDateStamp() != null ) {
+            summary.setStartDate(java.sql.Date.valueOf(model.getFirstDateStamp().toLocalDate()));
+            summary.setStartTime(Time.valueOf(model.getFirstDateStamp().toLocalTime()));
+        }
+        if ( model.getLastEventAdded() != null && model.getLastEventAdded().getDatestamp() != null ) {
+            summary.setEndDate(java.sql.Date.valueOf(model.getLastEventAdded().getDatestamp().toLocalDate()));
+            summary.setEndTime(Time.valueOf(model.getLastEventAdded().getDatestamp().toLocalTime()));
+        }
 
         exportMemorySummary(out, model);
-        exportPauseSummary(out, model);
-        exportOverallSummary(out, model);
+        exportMemorySummary(summary, model);
 
+        exportPauseSummary(out, model);
+        exportPauseSummary(summary, model);
+
+        exportOverallSummary(out, model);
+        exportOverallSummary(summary, model);
         out.flush();
+        persist(summary);
     }
 
+
+    private void persist(GCSummary gcSummary) {
+        EntityManager em = null;
+        try {
+            em = PersistenceManager.INSTANCE.getEntityManager();
+            em.getTransaction().begin();
+            em.persist(gcSummary);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if ( em != null) {
+                em.close();
+            }
+        }
+
+    }
     public void exportSummaryFromModel(GCModel model, String filePath) throws IOException {
         FileWriter outFile = new FileWriter(filePath);
         PrintWriter out = new PrintWriter(outFile);
@@ -174,6 +228,24 @@ public class SummaryDataWriter extends AbstractDataWriter {
         }
     }
 
+    private void exportOverallSummary(GCSummary summary, GCModel model) {
+        summary.setFootprint(model.getFootprint());
+        summary.setFreedMemory(model.getFreedMemory());
+        summary.setThroughput(model.getThroughput());
+        summary.setTotalTime((long)model.getRunningTime());
+        summary.setFreedMemoryPerMin(model.getFreedMemory()/model.getRunningTime()*60.0);
+
+        final boolean gcDataAvailable = model.getGCPause().getN() > 0;
+        if (gcDataAvailable) {
+            summary.setGcPerformance(model.getFreedMemoryByGC().getSum()/model.getGCPause().getSum());
+        }
+        final boolean fullGCDataAvailable = model.getFullGCPause().getN() > 0;
+
+        if (fullGCDataAvailable) {
+            summary.setFullGCPerformance(model.getFreedMemoryByFullGC().getSum()/model.getFullGCPause().getSum());
+        }
+    }
+
     private void exportPauseSummary(PrintWriter out, GCModel model) {
         final boolean pauseDataAvailable = model.getPause().getN() != 0;
         final boolean gcDataAvailable = model.getGCPause().getN() > 0;
@@ -226,6 +298,31 @@ public class SummaryDataWriter extends AbstractDataWriter {
         exportValue(out, "fullGCPausePc", percentFormatter.format(model.getFullGCPause().getSum()*100.0/model.getPause().getSum()), "%");
         exportValue(out, "gcPause", gcTimeFormatter.format(model.getGCPause().getSum()), "s");
         exportValue(out, "gcPausePc", percentFormatter.format(model.getGCPause().getSum()*100.0/model.getPause().getSum()), "%");
+    }
+
+    private void exportPauseSummary(GCSummary summary, GCModel model) {
+        final boolean pauseDataAvailable = model.getPause().getN() != 0;
+        final boolean gcDataAvailable = model.getGCPause().getN() > 0;
+        final boolean fullGCDataAvailable = model.getFullGCPause().getN() > 0;
+
+        if (pauseDataAvailable) {
+            summary.setPauseCount(model.getPause().getN());
+            summary.setAvgPause(model.getPause().average());
+            summary.setAvgPauseStdDev(model.getPause().standardDeviation());
+            summary.setMinPause(model.getPause().getMin());
+            summary.setMaxPause(model.getPause().getMax());
+            if (gcDataAvailable) {
+                summary.setGcPauseCount(model.getGCPause().getN());
+                summary.setAvgGCPause(model.getGCPause().average());
+                summary.setAvgGCPauseStdDev(model.getGCPause().standardDeviation());
+            }
+            if (fullGCDataAvailable) {
+                // G1GC - if we have a full, we are in the dog house
+            }
+        }
+        summary.setAccumPause(model.getPause().getSum());
+        summary.setFullGCPause(model.getFullGCPause().getSum());
+        summary.setGcPause(model.getGCPause().getSum());
     }
 
     private boolean isSignificant(final double average, final double standardDeviation) {
@@ -381,6 +478,41 @@ public class SummaryDataWriter extends AbstractDataWriter {
             return new FormattedValue(buffer, ' ');
         }
         return sigmaMemoryFormatter.formatToFormatted(value);
+    }
+
+
+    private void exportMemorySummary(GCSummary summary, GCModel model) {
+        summary.setTotalHeapAllocMax(model.getHeapAllocatedSizes().getMax());
+        summary.setTotalHeapUsedMax(model.getHeapUsedSizes().getMax());
+
+        if (model.getTenuredAllocatedSizes().getN() != 0) {
+            summary.setTotalTenuredAllocMax(model.getTenuredAllocatedSizes().getMax());
+            summary.setTotalTenuredUsedMax(model.getTenuredUsedSizes().getMax());
+        }
+
+        if (model.getYoungAllocatedSizes().getN() != 0) {
+            summary.setTotalYoungAllocMax(model.getYoungAllocatedSizes().getMax());
+            summary.setTotalYoungUsedMax(model.getYoungUsedSizes().getMax());
+        }
+
+        if (model.getPermAllocatedSizes().getN() != 0) {
+            summary.setTotalPermAllocMax(model.getPermAllocatedSizes().getMax());
+            summary.setTotalPermUsedMax(model.getPermUsedSizes().getMax());
+        }
+
+        final boolean gcDataAvailable = model.getFootprintAfterGC().getN() != 0;
+        if (gcDataAvailable) {
+            summary.setAvgfootprintAfterGC(model.getFootprintAfterGC().average());
+            summary.setAvgfootprintAfterGCStdDev(model.getFootprintAfterGC().standardDeviation());
+            summary.setFreedMemoryByGC(model.getFreedMemoryByGC().getSum());
+            summary.setAvgFreedMemoryByGC(model.getFreedMemoryByGC().average());
+            summary.setAvgFreedMemoryByGCStdDev(model.getFreedMemoryByGC().standardDeviation());
+        }
+        final boolean promotionDataAvailable = model.getPromotion().getN() != 0;
+        if (promotionDataAvailable) {
+            summary.setAvgPromotion(model.getPromotion().average());
+            summary.setPromotionTotal(model.getPromotion().getSum());
+        }
     }
 
 }
