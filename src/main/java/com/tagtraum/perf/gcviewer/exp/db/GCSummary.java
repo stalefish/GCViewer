@@ -16,142 +16,142 @@ public class GCSummary {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "gcLogFile")
+    @Column(name = "gclogfile")
     private String gcLogFile;
 
-    @Column(name = "startDate")
+    @Column(name = "startdate")
     private Date startDate;
 
-    @Column(name = "startTime")
+    @Column(name = "starttime")
     private Time startTime;
 
-    @Column(name = "endDate")
+    @Column(name = "enddate")
     private Date endDate;
 
-    @Column(name = "endTime")
+    @Column(name = "endtime")
     private Time endTime;
 
-    @Column(name = "totalHeapAllocMax")
+    @Column(name = "totalheapallocmax")
     private int totalHeapAllocMax;
 
-    @Column(name = "totalHeapUsedMax")
+    @Column(name = "totalheapusedmax")
     private double totalHeapUsedMax;
 
-    @Column(name = "totalTenuredAllocMax")
+    @Column(name = "totaltenuredallocmax")
     private double totalTenuredAllocMax;
 
-    @Column(name = "totalTenuredUsedMax")
+    @Column(name = "totaltenuredusedmax")
     private double totalTenuredUsedMax;
 
-    @Column(name = "totalYoungAllocMax")
+    @Column(name = "totalyoungallocmax")
     private double totalYoungAllocMax;
 
-    @Column(name = "totalYoungUsedMax")
+    @Column(name = "totalyoungusedmax")
     private double totalYoungUsedMax;
 
-    @Column(name = "totalPermAllocMax")
+    @Column(name = "totalpermallocmax")
     private double totalPermAllocMax;
 
-    @Column(name = "totalPermUsedMax")
+    @Column(name = "totalpermusedmax")
     private double totalPermUsedMax;
 
-    @Column(name = "footprintAfterFullGC")
+    @Column(name = "footprintafterfullgc")
     private double footprintAfterFullGC;
 
-    @Column(name = "slopeAfterFullGC")
+    @Column(name = "slopeafterfullgc")
     private double slopeAfterFullGC;
 
-    @Column(name = "freedMemoryByFullGC")
+    @Column(name = "freedmemorybyfullgc")
     private double freedMemoryByFullGC;
 
-    @Column(name = "avgFreedMemoryByFullGC")
+    @Column(name = "avgfreedmemorybyfullgc")
     private double avgFreedMemoryByFullGC;
 
-    @Column(name = "avgFreedMemoryByFullGCStdDev")
+    @Column(name = "avgfreedmemorybyfullgcstddev")
     private double avgFreedMemoryByFullGCStdDev;
 
-    @Column(name = "avgfootprintAfterGC")
+    @Column(name = "avgfootprintaftergc")
     private double avgfootprintAfterGC;
 
-    @Column(name = "avgfootprintAfterGCStdDev")
+    @Column(name = "avgfootprintaftergcstddev")
     private double avgfootprintAfterGCStdDev;
 
-    @Column(name = "slopeAfterGC")
+    @Column(name = "slopeaftergc")
     private double slopeAfterGC;
 
-    @Column(name = "avgRelativePostGCInc")
+    @Column(name = "avgrelativepostgcinc")
     private double avgRelativePostGCInc;
 
-    @Column(name = "freedMemoryByGC")
+    @Column(name = "freedmemorybygc")
     private double freedMemoryByGC;
 
-    @Column(name = "avgFreedMemoryByGC")
+    @Column(name = "avgfreedmemorybygc")
     private double avgFreedMemoryByGC;
 
-    @Column(name = "avgFreedMemoryByGCStdDev")
+    @Column(name = "avgfreedmemorybygcstddev")
     private double avgFreedMemoryByGCStdDev;
 
-    @Column(name = "avgPromotion")
+    @Column(name = "avgpromotion")
     private double avgPromotion;
 
-    @Column(name = "promotionTotal")
+    @Column(name = "promotiontotal")
     private double promotionTotal;
 
-    @Column(name = "pauseCount")
+    @Column(name = "pausecount")
     private int pauseCount;
 
-    @Column(name = "avgPause")
+    @Column(name = "avgpause")
     private double avgPause;
 
-    @Column(name = "avgPauseStdDev")
+    @Column(name = "avgpausestddev")
     private double avgPauseStdDev;
 
-    @Column(name = "minPause")
+    @Column(name = "minpause")
     private double minPause;
 
-    @Column(name = "maxPause")
+    @Column(name = "maxpause")
     private double maxPause;
 
-    @Column(name = "gcPauseCount")
+    @Column(name = "gcpausecount")
     private int gcPauseCount;
 
-    @Column(name = "avgGCPause")
+    @Column(name = "avggcpause")
     private double avgGCPause;
 
-    @Column(name = "avgGCPauseStdDev")
+    @Column(name = "avggcpausestddev")
     private double avgGCPauseStdDev;
 
-    @Column(name = "avgFullGCPause")
+    @Column(name = "avgfullgcpause")
     private double avgFullGCPause;
 
-    @Column(name = "accumPause")
+    @Column(name = "accumpause")
     private double accumPause;
 
-    @Column(name = "fullGCPause")
+    @Column(name = "fullgcpause")
     private double fullGCPause;
 
-    @Column(name = "gcPause")
+    @Column(name = "gcpause")
     private double gcPause;
 
     @Column(name = "footprint")
     private long footprint;
 
-    @Column(name = "freedMemory")
+    @Column(name = "freedmemory")
     private double freedMemory;
 
     @Column(name = "throughput")
     private double throughput;
 
-    @Column(name = "totalTime")
+    @Column(name = "totaltime")
     private long totalTime;
 
-    @Column(name = "freedMemoryPerMin")
+    @Column(name = "freedmemorypermin")
     private double freedMemoryPerMin;
 
-    @Column(name = "gcPerformance")
+    @Column(name = "gcperformance")
     private double gcPerformance;
 
-    @Column(name = "fullGCPerformance")
+    @Column(name = "fullgcperformance")
     private double fullGCPerformance;
 
 }
