@@ -98,9 +98,9 @@ public class GCViewerArgsParser {
             argsList.remove(memUnitIdx);
             argsList.remove(memUnitIdx);
         }
-        else if (typeIdx != -1) {
+        else if (memUnitIdx != -1) {
             // No specific type set, just keep the default
-            argsList.remove(typeIdx);
+            argsList.remove(memUnitIdx);
         }
 
         argumentCount = argsList.size();
